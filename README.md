@@ -2,7 +2,7 @@
 
 ```
 #################################################################
-WORK IN PROGRESS - NO CODE CHECKED IN, LAYING OUT INTERFACE FIRST
+WORK IN PROGRESS - NOT IN NPM - WILL BE MAKING BREAKING CHANGES
 #################################################################
 ```
 
@@ -12,7 +12,12 @@ Next Generation MS-SQL Client Interface for Node.js/io.js
 
 This module provides an interface to use JavaScript (ES6/ES2015) Template strings in order to construct SQL requests. 
 
-This library works with [mssql](https://www.npmjs.com/package/mssql)  module under the covers.  All connection options will be passed-through.
+This library inherits [mssql](https://www.npmjs.com/package/mssql)  module under the covers.
+
+## Requirements
+
+* Promises - Requires a native or [i-promise](https://www.npmjs.com/package/i-promise) compatible Promise implementation
+* mssql - mssql `^2.1.2` required, which is the latest as of this module's release
 
 
 ## Usage
@@ -20,16 +25,11 @@ This library works with [mssql](https://www.npmjs.com/package/mssql)  module und
 Responses with multiple recordsets are not supported.  Use `mssql` directly.
 
 ```
-var mssql = require('mssql');
 var sql = require('mssql-ng');
 var opts = {...} // mssql's connection options
 ```
 
-### Module method
-
 The module itself is a method that returns a Promise that will resolve with the active connection, similar to `mssql.connect()` ... there will be additional methods for template parsers attached to the Promise itself (these will not carry forward).  This allows one to resolve the connection object directly (since mssql's resolver doesn't include a reference to the connection object).
-
-NOTE: This method will disable the streaming option if specified.  If you want global streaming, use mssql directly, this is for convenience only.
 
 ```
 sql(opts)
@@ -43,26 +43,34 @@ sql(opts)
 The promise returned from `sql(options)` will have two additional methods (`.query` and `.queryStream`).  These methods do not get carried forward with the Promise chain.
 
 
-### .query - returns Promise - resolves recordset
+### sql(opts).query - returns Promise - resolves {parameters,recordset}
+
+For output parameters, use the module's `out` method, passing the name of the parameter, as well as the datatype of the parameter from `mssql`
 
 ```
 function validateLogin(email, password) {
   var app = '89265a96-07ae-4463-a8d6-00a18140a030';
 
   return sql(opts).query`
+    SET ${sql.out('paramName', mssql.Int)} = 5;
+
     SELECT m.*
     FROM aspnet_Membership m
     WHERE m.LowerdEmail = ${username.toLowerCase()}
       AND m.ApplicationId = ${app}
-  `.then(function(results){
-    if (!(results && results.length)) throw new Error('No matching user found');
-    var membership = results[0];
-    return validateHash(password, results[0].PasswordSalt, results[0].Password);
+  `.then(function(result){
+    //output parameter
+    var paramName = result.parameters.paramName;
+
+    //recordset - result.recordset contains the rows
+    var member = result && result.recordset && result.recordset[0];
+    if (!member) throw new Error('No matching user found');
+    return validateHash(password, member.PasswordSalt, member.Password);
   });
 }
 ```
 
-### .queryStream - returns Promise - resolves streamable request object
+### sql(opts).queryStream - returns Promise - resolves streaming mssql request object
 
 *Note: mssql/tedious does not support backpressure*
 
@@ -111,9 +119,9 @@ This module uses [i-promise](https://www.npmjs.com/package/i-promise) to retriev
 require('i-promise/config').use(require('bluebird'));
 ```
 
-### shallow-copy
+### safe-clone-deep and json-stable-stringify
 
-The options object passed into the module method will be shallow copied and the `stream` option deleted.
+The options object passed into the module method will be cloned, and stringified version is used for pooling-key.
 
 -----
 
@@ -122,13 +130,19 @@ The options object passed into the module method will be shallow copied and the 
 
 This module will *only* do very simplistic type checking...
 
-* Date - instances will be set to `DATETIMEOFFSET(7)`
-* Boolean - will use `bit` (0 or 1)
-* Number - will use the closest available match
-  * `~~num` matches input, uses `int`
-  * otherwise will use `VARCHAR(###)`
+* null or undefined - `Bit` set to null
+* Boolean - will use `Bit`
+* Number
+  * `~~num === num` - `Int`
+  * `Math.floor(num) === Math.ceil(num)` - `BigInt`
+  * otherwise `Float` 
+* Objects
+  * Buffer - `VarBinary`
+  * Date - `DateTimeOffset` 
+  * otherwise fallthrough to string using `JSON.stringify(safeclonedeep(value))`
 * String
-  * `UNIQUEIDENTIFIER` when matching regex
-  * otherwise `NVARCHAR(MAX)`
-* Buffer will use `VarBinary(MAX)`
+  * UUID - via regular expression test - `UniqueIdentifier`
+  * otherwise `NVarChar`
+
+NOTE: If you need another interpretation for numbers, convert the number to an appropriate string, and SQL Server can coerce the value into the type needed.
 

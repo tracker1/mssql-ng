@@ -1,0 +1,50 @@
+{
+  "ecmaFeatures": {
+    "arrowFunctions": true,
+    "binaryLiterals": false,
+    "blockBindings": true,
+    "classes": true,
+    "defaultParams": true,
+    "destructuring": true,
+    "forOf": true,
+    "generators": true,
+    "modules": false,
+    "objectLiteralComputedProperties": true,
+    "objectLiteralDuplicateProperties": false,
+    "objectLiteralShorthandMethods": true,
+    "objectLiteralShorthandProperties": true,
+    "octalLiterals": false,
+    "regexUFlag": false,
+    "regexYFlag": false,
+    "superInFunctions": false,
+    "templateStrings": true,
+    "unicodeCodePointEscapes": false,
+    "globalReturn": false,
+    "jsx": false
+  },
+  "rules": {
+    "strict": "never",
+    "quotes": "single",
+    "curly": "multi-line",
+    "comma-style": "first",
+    "comma-spacing": "off",
+    "no-use-before-define": "nofunc",
+    "no-trailing-spaces": false,
+    "no-underscore-dangle": false
+  },
+  "globals": {
+  
+    //from node
+    "require": false,
+    "module": false,
+    "exports": false,
+    "process": false,
+
+    //cc-globals isomorphic fetch
+    "fetch": false,
+
+    //cc-globals ramda
+    "R": false
+
+  }
+}
