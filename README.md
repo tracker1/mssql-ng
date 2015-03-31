@@ -29,14 +29,19 @@ var opts = {...} // mssql's connection options
 
 The module itself is a method that returns a Promise that will resolve with the active connection, similar to `mssql.connect()` ... there will be additional methods for template parsers attached to the Promise itself (these will not carry forward).  This allows one to resolve the connection object directly (since mssql's resolver doesn't include a reference to the connection object).
 
+NOTE: This method will disable the streaming option if specified.  If you want global streaming, use mssql directly, this is for convenience only.
+
 ```
-sql(opts) //note: streaming option will be disabled here
+sql(opts)
   .then(function(conn){
     //use connection
     var request = new mssql.Request(conn);
     ...
   });
 ```
+
+The promise returned from `sql(options)` will have two additional methods (`.query` and `.queryStream`).  These methods do not get carried forward with the Promise chain.
+
 
 ### .query - returns Promise - resolves recordset
 
@@ -105,6 +110,10 @@ This module uses [i-promise](https://www.npmjs.com/package/i-promise) to retriev
 ```
 require('i-promise/config').use(require('bluebird'));
 ```
+
+### shallow-copy
+
+The options object passed into the module method will be shallow copied and the `stream` option deleted.
 
 -----
 
