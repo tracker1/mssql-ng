@@ -51,11 +51,10 @@ function addParam(request, index, param) {
   if (typeof param === 'function') return param(request,index);
 
   var paramName = 'mssqlng_param_' + index.toString();
-  request.input(paramName, param);
 
   //iife - allows for fast return from evaluation
   var clean = cleanParameter(param);
-  return request.input(paramName, clean[0], clean[1]);
+  request.input(paramName, clean[0], clean[1]);
 
   //return parameter name used;
   return paramName;

@@ -8,6 +8,10 @@ module.exports = closeConnection;
 function closeConnection(options) {
   //no options, close/delete all connection references
   if (!options) {
+    try {
+      mssql.close();
+    } catch(err){}
+
     //create list to track items to close
     let closeList = [];
 
