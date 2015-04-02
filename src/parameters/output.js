@@ -1,7 +1,8 @@
 module.exports = handleOutputParam;
 
-function handleOutputParam(parameterName, type) {
+function handleOutputParam(name, type, value) {
   return (request, index) => {
-    request.output(parameterName, type);
-  }
+    request.output(parameterName, type, value);
+    return name;
+  };
 }

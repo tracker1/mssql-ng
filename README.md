@@ -96,6 +96,36 @@ sql(opts).queryStream`
 })
 ```
 
+### sql.input(name,type,value)
+
+If you want to specify the `mssql` datatype, you can use `sql.input` in your template.
+
+```
+sql(opts).query`
+
+  EXEC someSproc sql.input('myParam', sql.Decimal(22,5), 45.333)
+
+`.then(function(result){
+  ...
+})
+```
+
+### sql.output(name,type,defaultValue)
+
+If you need an output parameter, you can use `sql.output` to specify the parameter name and type.
+
+```
+sql(opts).query`
+
+  SET ${sql.output('myParam', sql.DateTimeOffset, null)} = SYSDATETIMEOFFSET()
+
+`.then(function(result){
+
+  console.log(result.parameters.myParam); //date-time
+
+})
+```
+
 ### Other options
 
 If you need to make other types of requests, you should use the `mssql` module itself.

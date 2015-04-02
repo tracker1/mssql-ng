@@ -14,5 +14,5 @@ for (let prop in mssql) {
 module.exports.close = require('./connections/close');
 
 //add in/out parameter utilities to exports
-module.exports.out = require('./parameters/output');
-module.exports.in = require('./parameters/input');
+module.exports.output = require('./parameters/output');
+module.exports.input = require('./parameters/input');
