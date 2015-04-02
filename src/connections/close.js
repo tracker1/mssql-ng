@@ -8,17 +8,21 @@ module.exports = closeConnection;
 function closeConnection(options) {
   //no options, close/delete all connection references
   if (!options) {
+    //create list to track items to close
     let closeList = [];
+
+    //iterate through each connection
     for (var key in connections) {
-      if (typeof connections[key].close === 'function') closeList.push(connections[key]);
+      //if there's a close method (connection match), add it to the list
+      if (connections[key] && typeof connections[key].close === 'function') closeList.push(connections[key]);
     }
+
+    //iterate through list and close each connection
     closeList.forEach((conn)=>conn.close());
   }
 
   //either a connection promise, or a connection
-  if (options._mssqlngKey) {
-    return connections[options._mssqlngKey] && connections[options._mssqlngKey].close();
-  }
+  if (options._mssqlngKey && typeof options.close === 'function') return options.close();
 
   //match against connection options
   let key = stringify(options || {});
