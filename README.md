@@ -52,7 +52,7 @@ function validateLogin(email, password) {
   var app = '89265a96-07ae-4463-a8d6-00a18140a030';
 
   return sql(opts).query`
-    SET ${sql.out('paramName', mssql.Int)} = 5;
+    SET ${sql.output('paramName', mssql.Int)} = 5;
 
     SELECT m.*
     FROM aspnet_Membership m
