@@ -20,7 +20,10 @@
     "templateStrings": true,
     "unicodeCodePointEscapes": false,
     "globalReturn": false,
-    "jsx": false
+    "jsx": false,
+
+    //es6 use let or const
+    "no-var": true
   },
   "rules": {
     "strict": "never",

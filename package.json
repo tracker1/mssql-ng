@@ -41,14 +41,12 @@
     "mssql": "^2.1.2"
   },
   "dependencies": {
-    "cc-globals": "^2.0.0",
     "i-promise": "^1.1.0",
     "json-stable-stringify": "^1.0.0",
-    "safe-clone-deep": "^1.0.5",
-    "semver": "^4.3.1"
+    "safe-clone-deep": "^1.0.5"
   },
   "devDependencies": {
-    "eslint": "^0.17.0",
+    "eslint": "^0.18.0",
     "babel": "^4.7.12",
     "chai": "^2.1.1",
     "isparta": "^2.2.0",
