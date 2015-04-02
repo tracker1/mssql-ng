@@ -1,0 +1,8 @@
+//cache of existing connections
+"use strict";
+
+module.exports = {
+  promises: {}, //promises for connections
+  connections: {} //connection objects
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jYWNoZS9pbmRleC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFDQSxNQUFNLENBQUMsT0FBTyxHQUFHO0FBQ2YsVUFBUSxFQUFFLEVBQUU7QUFDWixhQUFXLEVBQUUsRUFBRTtBQUFBLENBQ2hCLENBQUMiLCJmaWxlIjoic3JjL2NhY2hlL2luZGV4LmpzIiwic291cmNlc0NvbnRlbnQiOlsiLy9jYWNoZSBvZiBleGlzdGluZyBjb25uZWN0aW9uc1xubW9kdWxlLmV4cG9ydHMgPSB7XG4gIHByb21pc2VzOiB7fSwgLy9wcm9taXNlcyBmb3IgY29ubmVjdGlvbnNcbiAgY29ubmVjdGlvbnM6IHt9IC8vY29ubmVjdGlvbiBvYmplY3RzXG59O1xuIl19

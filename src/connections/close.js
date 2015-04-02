@@ -12,7 +12,7 @@ function closeConnection(options) {
     let closeList = [];
 
     //iterate through each connection
-    for (var key in connections) {
+    for (let key in connections) {
       //if there's a close method (connection match), add it to the list
       if (connections[key] && typeof connections[key].close === 'function') closeList.push(connections[key]);
     }
