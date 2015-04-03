@@ -96,7 +96,7 @@ sql(opts).queryStream`
 })
 ```
 
-### sql.input(name,type,value)
+### sql.input(name,type,value) - specify parameter name and `mssql` datatype
 
 If you want to specify the `mssql` datatype, you can use `sql.input` in your template.
 
@@ -165,14 +165,14 @@ This module will *only* do very simplistic type checking...
 * Number
   * `~~num === num` - `Int`
   * `Math.floor(num) === Math.ceil(num)` - `BigInt`
-  * otherwise `Float` 
+  * otherwise `Float`
 * Objects
   * Buffer - `VarBinary`
-  * Date - `DateTimeOffset` 
+  * Date - `DateTimeOffset`
   * otherwise fallthrough to string using `JSON.stringify(safeclonedeep(value))`
 * String
   * UUID - via regular expression test - `UniqueIdentifier`
   * otherwise `NVarChar`
 
-NOTE: If you need another interpretation for numbers, convert the number to an appropriate string, and SQL Server can coerce the value into the type needed.
+NOTE: If you need another interpretation for numbers, you can pass it as an appropriately formatted string (SQL coersion) or you can use `sql.input` to specify a different type.
 

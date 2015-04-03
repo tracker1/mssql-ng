@@ -16,13 +16,13 @@ function closeConnection(options) {
     let closeList = [];
 
     //iterate through each connection
-    for (let key in connections) {
+    for (let key in promises) {
       //if there's a close method (connection match), add it to the list
-      if (connections[key] && typeof connections[key].close === 'function') closeList.push(connections[key]);
+      if (promises[key] && typeof promises[key].close === 'function') closeList.push(promises[key]);
     }
 
     //iterate through list and close each connection
-    closeList.forEach((conn)=>conn.close());
+    closeList.forEach((item)=>item.close());
   }
 
   //either a connection promise, or a connection

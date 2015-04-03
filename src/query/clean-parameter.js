@@ -1,6 +1,11 @@
+var mssql = require('mssql');
+var debug = require('debug')('mssql-ng');
+
 module.exports = cleanParameter;
 
 function cleanParameter(value) {
+  debug('cleanParameter','begin',value, typeof value);
+
   //null or empty
   if (value === null || typeof value === 'undefined') return [mssql.Bit, null];
 

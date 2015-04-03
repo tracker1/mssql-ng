@@ -1,22 +1,31 @@
+let debug = require('debug')('mssql-ng')
 let {connections,promises} = require('../cache');
 
 module.exports = shadowClose;
 
 //shadow the close method, so that it will clear itself from the pool
 function shadowClose(connection) {
+  debug('shadowClose', 'start');
+
   let close = connection.close;
-  connection.close = function(...args) {
+  connection.close = function() {
+    debug('connection.close','start');
     //remove references
-    delete promises[key];
-    delete connections[key];
+    delete promises[connection._mssqlngKey];
+    delete connections[connection._mssqlngKey];
 
-    try {
-      //close original connection
-      close.apply(connection,args);
-    } catch(err) {}
+    //close original connection
+    setImmediate(()=>{
+      try {
+        debug('connection.close','apply');
+        close.apply(connection);
+        debug('connection.close','applied');
+        //clear local references - allow GC
+        close = null;
+        connection - null;
+      }catch(err){}
+    });
 
-    //clear local references - allow GC
-    close = null;
-    connection - null;
+    debug('connection.close','end');
   }
 }
