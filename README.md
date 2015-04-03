@@ -6,6 +6,10 @@ This module provides an interface to use JavaScript (ES6/ES2015) Template string
 
 This library inherits [mssql](https://www.npmjs.com/package/mssql)  module under the covers.  For use of template processors, you should use a version of node/io.js that supports template strings or use a transpiler like BabelJS.
 
+Thank you [Taras Mitran](http://ivc.com/blog/better-sql-strings-in-node-js/) for the idea.
+
+
+### Usage:
 
 ```js
 \\reference to original module, for use with legacy code
@@ -43,14 +47,6 @@ sql.query`
 }).catch(console.error);
 ```
 
-
-## Requirements
-
-* Requires native Promises or [i-promise](https://www.npmjs.com/package/i-promise) detected Promise library.
-* Requires a very recent 2.x release of [mssql](https://www.npmjs.com/package/mssql) as a peerDependency.
-
-
-## Usage
 
 Responses with multiple recordsets are not supported.  Use `mssql` directly.
 
@@ -132,30 +128,7 @@ sql.query`
 ```
 
 
-## Dependencies
-
-
-### mssql >= 2.0.0
-
-This module uses [mssql](https://www.npmjs.com/package/mssql) as a peerDependency.  All connection options use this module under the covers.
-
-
-### i-promise
-
-This module uses [i-promise](https://www.npmjs.com/package/i-promise) to retrieve a promise implementation to use.  If you are running a legacy version of Node/io.js you will need to install a compatible promise library.  If you wish to force a promise library, you can do so.
-
-```
-require('i-promise/config').use(require('bluebird'));
-```
-
-### safe-clone-deep and json-stable-stringify
-
-The options object passed into the module method will be cloned, and stringified version is used for pooling-key.
-
------
-
-
-## Type checking
+## Automatic Type Detection
 
 This module will *only* do very simplistic type checking...
 
@@ -174,4 +147,12 @@ This module will *only* do very simplistic type checking...
   * otherwise `NVarChar`
 
 NOTE: If you need another interpretation for numbers, you can pass it as an appropriately formatted string (SQL coersion) or you can use `sql.input` to specify a different type.
+
+
+## Requirements
+
+* Requires a very recent 2.x release of [mssql](https://www.npmjs.com/package/mssql) as a peerDependency.
+* Requirews [i-promise](https://www.npmjs.com/package/i-promise) as a peerDependency, which requires native Promises, or a detected Promise library.
+  * If you wish to force a promise library, you can do so before requiring this module via `require('i-promise/config').use(require('bluebird'));`
+
 
