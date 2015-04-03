@@ -27,6 +27,5 @@ build/Release
 node_modules
 
 # Project uncomposed source and tests
-src
 spec
 scripts
