@@ -4,75 +4,82 @@ Next Generation MS-SQL Client Interface for Node.js/io.js
 
 This module provides an interface to use JavaScript (ES6/ES2015) Template strings in order to construct SQL requests. 
 
-This library inherits [mssql](https://www.npmjs.com/package/mssql)  module under the covers.  For best use, you should use a version of node/io.js that supports template strings or use a transpiler like BabelJS.
+This library inherits [mssql](https://www.npmjs.com/package/mssql)  module under the covers.  For use of template processors, you should use a version of node/io.js that supports template strings or use a transpiler like BabelJS.
 
 
-## Disclaimer
+```js
+\\reference to original module, for use with legacy code
+var mssql = require('mssql-ng');
 
-**This is a work in progress**, it's not very well tested (eslint doesn't like the splats, and haven't written tests).  A cursory test against an actual SQL server instance for input/output parameters seems to work.
+\\mssql connection options
+var opts = {...} //mssql connection options
+
+\\ ConnectionPromise (Promise which resolves to an mssql.Connection)
+\\   extended with mssql.TYPES
+\\   .query and .queryStream template processors
+\\   .input and .output parameter handlers
+var sql = mssql(opts);
+
+...
+\\ simple query template processor, returns promise for a result
+sql.query`
+
+    --you can specify output parameters (name, type, initialValue) 
+    SET ${sql.output('param1', sql.NVarChar(sql.MAX)} = 'output param value'
+
+    --input parameters can be auto-detected, or explicit
+    SELECT ${someVariable1} [Test1],
+           ${sql.input('param2', sql.Decimal, someNumberVariable)} [Test2]
+
+`.then(function(result){
+  
+  //request parameters attached to result.parameters
+  console.log('output @param1', result.parameters.param1.value);
+
+  //recordset/rows attached to result.recordset
+  console.log('row 1, column 1', result.recordset[0].Test1); 
+  console.log('row 1, column 2', result.recordset[0].Test2);
+ 
+}).catch(console.error);
+```
 
 
 ## Requirements
 
-* Promises - Requires a native or [i-promise](https://www.npmjs.com/package/i-promise) compatible Promise implementation
-* mssql - mssql `^2.1.2` required, which is the latest as of this module's release
+* Requires native Promises or [i-promise](https://www.npmjs.com/package/i-promise) detected Promise library.
+* Requires a very recent 2.x release of [mssql](https://www.npmjs.com/package/mssql) as a peerDependency.
 
 
 ## Usage
 
 Responses with multiple recordsets are not supported.  Use `mssql` directly.
 
-```
-var sql = require('mssql-ng');
-var opts = {...} // mssql's connection options
-```
-
 The module itself is a method that returns a Promise that will resolve with the active connection, similar to `mssql.connect()` ... there will be additional methods for template parsers attached to the Promise itself (these will not carry forward).  This allows one to resolve the connection object directly (since mssql's resolver doesn't include a reference to the connection object).
 
-```
-sql(opts)
-  .then(function(conn){
-    //use connection
-    var request = new mssql.Request(conn);
-    ...
-  });
-```
+```js
+var mssql = require('mssql-ng');
+var sql = mssql(opts);
 
-The promise returned from `sql(options)` will have two additional methods (`.query` and `.queryStream`).  These methods do not get carried forward with the Promise chain.
-
-
-### sql(opts).query - returns Promise - resolves {parameters,recordset}
-
-For output parameters, use the module's `out` method, passing the name of the parameter, as well as the datatype of the parameter from `mssql`
-
-```
-function validateLogin(email, password) {
-  var app = '89265a96-07ae-4463-a8d6-00a18140a030';
-
-  return sql(opts).query`
-    SET ${sql.output('paramName', mssql.Int)} = 5;
-
-    SELECT m.*
-    FROM aspnet_Membership m
-    WHERE m.LowerdEmail = ${username.toLowerCase()}
-      AND m.ApplicationId = ${app}
-  `.then(function(result){
-    //output parameter
-    var paramName = result.parameters.paramName;
-
-    //recordset - result.recordset contains the rows
-    var member = result && result.recordset && result.recordset[0];
-    if (!member) throw new Error('No matching user found');
-    return validateHash(password, member.PasswordSalt, member.Password);
-  });
-}
+sql.then(function(conn){
+  //use connection
+  var request = new mssql.Request(conn);
+  ...
+});
 ```
 
-### sql(opts).queryStream - returns Promise - resolves streaming mssql request object
+
+### ConnectionPromise.query - returns Promise - resolves {parameters,recordset}
+
+The `.query` method is an ES6 template parser, which will resolve to an object containing sql request `parameters` for access to output parameters, in addition to `recordset` which will be an array of rows for the result.
+
+
+### ConnectionPromise.queryStream - returns Promise - resolves streaming mssql request object
 
 *Note: mssql/tedious does not support backpressure*
 
-```
+The `.queryStream` method is an ES6 template parser, which will resolve to an `mssql.Request` which has made a query in stream mode, and is ready to pipe. 
+
+```js
 sql(opts).queryStream`
   SELECT *
   FROM SomeTable
@@ -94,12 +101,12 @@ sql(opts).queryStream`
 })
 ```
 
-### sql.input(name,type,value) - specify parameter name and `mssql` datatype
+### ConnectionPromise.input(name,type,value) - specify parameter name and `mssql` datatype
 
 If you want to specify the `mssql` datatype, you can use `sql.input` in your template.
 
-```
-sql(opts).query`
+```js
+sql.query`
 
   EXEC someSproc sql.input('myParam', sql.Decimal(22,5), 45.333)
 
@@ -108,12 +115,12 @@ sql(opts).query`
 })
 ```
 
-### sql.output(name,type,defaultValue)
+### ConnectionPromise.output(name,type,defaultValue)
 
 If you need an output parameter, you can use `sql.output` to specify the parameter name and type.
 
-```
-sql(opts).query`
+```js
+sql.query`
 
   SET ${sql.output('myParam', sql.DateTimeOffset, null)} = SYSDATETIMEOFFSET()
 
@@ -123,12 +130,6 @@ sql(opts).query`
 
 })
 ```
-
-### Other options
-
-If you need to make other types of requests, you should use the `mssql` module itself.
-
------
 
 
 ## Dependencies
