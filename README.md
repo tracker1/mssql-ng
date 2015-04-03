@@ -1,18 +1,16 @@
-# WARNING!!!
-
-```
-#################################################################
-WORK IN PROGRESS - NOT IN NPM - WILL BE MAKING BREAKING CHANGES
-#################################################################
-```
-
 # mssql-ng
 
 Next Generation MS-SQL Client Interface for Node.js/io.js
 
 This module provides an interface to use JavaScript (ES6/ES2015) Template strings in order to construct SQL requests. 
 
-This library inherits [mssql](https://www.npmjs.com/package/mssql)  module under the covers.
+This library inherits [mssql](https://www.npmjs.com/package/mssql)  module under the covers.  For best use, you should use a version of node/io.js that supports template strings or use a transpiler like BabelJS.
+
+
+## Disclaimer
+
+**This is a work in progress**, it's not very well tested (eslint doesn't like the splats, and haven't written tests).  A cursory test against an actual SQL server instance for input/output parameters seems to work.
+
 
 ## Requirements
 
