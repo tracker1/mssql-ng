@@ -48,6 +48,12 @@ function createConnectionPromise(key, options) {
   var promise = new Promise((resolve,reject)=>{
     //create a new mssql connection
     let connection = new mssql.Connection(options,(err)=>handleConnectionCallback(err, resolve, reject, key, connection));
+    connection.close = ()=>promise.then((conn)=>conn.close()).catch(()=>{ delete promises[key]; delete connections[key] });
+    connection.query = (templateParts, ...params)=>promise.then((conn)=>query(conn,{},templateParts,params));
+    connection.queryStream = (templateParts, ...params)=>promise.then((conn)=>query(conn,{stream:true},templateParts,params));
+    connection.output = require('../parameters/output');
+    connection.input = require('../parameters/input');
+
     debug('createConnectionPromise','success');
   });
 
@@ -86,8 +92,6 @@ function handleConnectionCallback(err, resolve, reject, key, connection) {
 
   //create a reference to the original connection for cleanup
   connection._mssqlngKey = key;
-  connection.input = require('../parameters/input');
-  connection.output = require('../parameters/input');
 
   //add connection to the pool
   connections[connection._mssqlngKey] = connection;
