@@ -1,5 +1,6 @@
 var mssql = require('mssql');
 var debug = require('debug')('mssql-ng');
+var clone = require('safe-clone-deep');
 
 module.exports = cleanParameter;
 
