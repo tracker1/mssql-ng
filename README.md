@@ -1,3 +1,12 @@
+# DEPRECATED - DO NOT USE
+
+The [mssql](https://www.npmjs.com/package/mssql) package now has Promise and tagged template support.
+
+-----
+-----
+-----
+-----
+
 # mssql-ng
 
 Next Generation MS-SQL Client Interface for Node.js/io.js
